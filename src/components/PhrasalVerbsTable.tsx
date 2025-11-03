@@ -392,11 +392,16 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
                                     </div>
                                   ) : (
                                     <div className="text-sm space-y-2">
-                                      {exampleSentences[`${verbData.verb}-${PREPOSITIONS[colIndex].toLowerCase()}`]?.split('|').map((sentence, idx) => (
-                                        <p key={idx} className={idx === 0 ? 'font-medium' : 'text-muted-foreground'}>
-                                          {sentence.trim()}
-                                        </p>
-                                      ))}
+                                      {exampleSentences[`${verbData.verb}-${PREPOSITIONS[colIndex].toLowerCase()}`]?.split('|').map((sentence, idx) => {
+                                        const parts = sentence.trim().split(/\*\*(.*?)\*\*/g);
+                                        return (
+                                          <p key={idx} className={idx === 0 ? 'font-medium' : 'text-muted-foreground'}>
+                                            {parts.map((part, i) => 
+                                              i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+                                            )}
+                                          </p>
+                                        );
+                                      })}
                                     </div>
                                   )}
                                 </TooltipContent>
