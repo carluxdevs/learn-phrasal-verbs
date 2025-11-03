@@ -1,64 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Plus, Trash2, Edit2, Save, X, Loader2 } from "lucide-react";
+import { Plus, Trash2, Edit2, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { usePhrasalVerbs } from "./usePhrasalVerbs";
 
-// Prepositions in alphabetical order
-const PREPOSITIONS = [
-  "Across", "Along", "Around", "Away", "Back", "By", "Down", "For", 
-  "In", "Into", "Off", "On", "Out", "Over", "Up", "With"
-];
-
-// Initial data from the example
-const INITIAL_VERBS = [
-  { verb: "Ask", meanings: ["","","","","","","Pedir salir","","","","","","","","",""] },
-  { verb: "Back", meanings: ["","","","","","","Echarse atrás","","","","Alejarse","","Retirarse","","Apoyar/Respaldar",""] },
-  { verb: "Be", meanings: ["","","","Estar fuera","","","Estar deprimido","Ir tras algo","Estar en casa","","Irse","Estar encendido","","Haber terminado","Estar despierto","Estar enfermo de"] },
-  { verb: "Blow", meanings: ["","","","","","","","","","","Soplar/Apagar","","Explotar","","Explotar",""] },
-  { verb: "Break", meanings: ["","","","","","","Averiarse","","Interrumpir","Irrumpir","","","Estallar/Repartir","","Terminar (relación)",""] },
-  { verb: "Bring", meanings: ["","","","Devolver","Traer de vuelta","","Bajar/Reducir","","","","","","","","Mencionar/Criar",""] },
-  { verb: "Bump", meanings: ["Encontrarse con","","","","","Visitar","","","","Chocarse con","","","","","","Chocarse"] },
-  { verb: "Call", meanings: ["","","","","Devolver llamada","","","Pedir/Requerir","Visitar/Pasarse","","Cancelar/Suspender","Visitar","Gritar","","",""] },
-  { verb: "Carry", meanings: ["","Continuar","","","","","","","","","","","Continuar","Llevar a cabo","",""] },
-  { verb: "Check", meanings: ["","","","","","","","","Registrarse","","Verificar/Dejar hotel","","Investigar","","",""] },
-  { verb: "Come", meanings: ["Encontrarse con","Aparecer/Avanzar","","Separarse/Desprenderse","Regresar","","Bajar","","Entrar","Toparse con","Desprenderse","¡Vamos!","Salir","Visitar/Venir","Subir/Surgir",""] },
-  { verb: "Cut", meanings: ["","","","","","","Reducir","","Interrumpir","","Cortar/Aislar","","Recortar/Dejar de","","",""] },
-  { verb: "Do", meanings: ["","","","","","","Abrochar (cremallera)","","","","","","","","Maquillar/Preparar",""] },
-  { verb: "Drop", meanings: ["","","","Dejar algo","","Visitar","Dejar (a alguien)","","","","","","","","Abandonar (estudios)",""] },
-  { verb: "Fill", meanings: ["","","","","","","","","Rellenar (formulario)","","","","Rellenar (espacio)","","Rellenar/Llenar",""] },
-  { verb: "Find", meanings: ["","","","","","","","","","","","","Averiguar/Descubrir","","",""] },
-  { verb: "Get", meanings: ["","Llevarse bien","","Deshacerse de","Regresar","","Bajar/Deprimir","","Entrar","","Bajar (transporte)","Subir (transporte)","Salir","Recuperarse/Superar","Levantarse","Llevarse bien"] },
-  { verb: "Give", meanings: ["","","","Regalar","Devolver","","Derrumbarse","","Ceder","","","","Repartir","Repasar","Rendirse/Abandonar",""] },
-  { verb: "Go", meanings: ["","","","Irse","Volver/Regresar","","Bajar","","Entrar","","Explotar/Deteriorarse","Continuar/Suceder","Salir","Repasar/Revisar","Subir/Aumentar",""] },
-  { verb: "Grow", meanings: ["","","","","","","","","","","","","","","Crecer/Madurar",""] },
-  { verb: "Hang", meanings: ["","","","","Esperar/Devolver","","","","Entregar","","Colgar/Cortar (telf.)","Continuar","Pasar el rato","","",""] },
-  { verb: "Hold", meanings: ["","","","","Devolver","","Retrasar","","Contener/Caber**","","Despegar (Avión)","Esperar","","","Sostener",""] },
-  { verb: "Keep", meanings: ["","Llevarse bien","","Mantener alejado","Retener/Devolver","","Apuntar (datos)","Buscar","","","Alejar","Continuar","Ocultar","Superar","",""] },
-  { verb: "Look", meanings: ["across","","Buscar","","Recordar","","Despreciar","Buscar","Examinar/Investigar","Examinar/Investigar","","Observar/Cuidar","Tener cuidado","","Buscar (info.)","Esperar con ansias"] },
-  { verb: "Make", meanings: ["","","","Irse","","","","","","","","","Entender","","Inventar/Hacer las paces",""] },
-  { verb: "Pass", meanings: ["","","","Repartir","","","Desmayarse","","","","Desmayarse","","Desmayarse/Repartir","","",""] },
-  { verb: "Pay", meanings: ["","","","Pagar","Devolver (dinero)","","","","","","","","Pagar (en efectivo)","","Pagar todo",""] },
-  { verb: "Pick", meanings: ["","","","","","","","","","","","","","","Recoger/Mejorar",""] },
-  { verb: "Point", meanings: ["","","","","","","","","","","","","Señalar/Destacar","","",""] },
-  { verb: "Put", meanings: ["","","","Guardar/Ordenar","Devolver","","Bajar/Apuntar","","Meter/Insertar","","Posponer/Desalentar","Ponerse (ropa)","Apagar (fuego)/Publicar","Superar/Tolerar","Subir/Alojar",""] },
-  { verb: "Run", meanings: ["Encontrarse con","","","Huir","","","Atropellar","","Entrar","Estrellarse","Irse","","Agotarse/Acabarse","Revisar","",""] },
-  { verb: "Set", meanings: ["","","","","","","","","Instalarse","","","Empezar (viaje)","Exponer/Partir","Superar/Recuperarse","Establecer/Montar",""] },
-  { verb: "Show", meanings: ["","","","","","","","","","","Presumir","","Aparecer/Llegar","","Aparecer/Llegar",""] },
-  { verb: "Sit", meanings: ["","","","","Apoyar","","Sentarse","","","","","","","","",""] },
-  { verb: "Take", meanings: ["","","","Quitarse/Despegar","Retirar/Devolver","","Apuntar/Anotar","","Engañar/Absorber","","Despegar/Quitarse","","Salir","Tomar el control","Empezar (hobby)",""] },
-  { verb: "Turn", meanings: ["","","","Rechazar","Volverse","","Bajar (volumen)/Rechazar","","Entregar","Convertirse en","Apagar","Encender","Resultar/Irse","","Subir (volumen)/Aparecer",""] },
-];
-
-interface VerbData {
-  verb: string;
-  meanings: string[];
+interface PhrasalVerbsTableProps {
+  userId: string;
 }
 
-export const PhrasalVerbsTable = () => {
-  const [verbs, setVerbs] = useState<VerbData[]>(INITIAL_VERBS);
+export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
+  const { verbs, setVerbs, loading, saveVerb, deleteVerb, PREPOSITIONS } = usePhrasalVerbs(userId);
   const [editingVerb, setEditingVerb] = useState<string | null>(null);
   const [editingCell, setEditingCell] = useState<{ verb: string; prepIndex: number } | null>(null);
   const [newVerb, setNewVerb] = useState("");
@@ -66,6 +20,17 @@ export const PhrasalVerbsTable = () => {
   const [loadingTranslations, setLoadingTranslations] = useState<Set<string>>(new Set());
   const [hoveredCell, setHoveredCell] = useState<{ rowIndex: number; colIndex: number } | null>(null);
   const { toast } = useToast();
+
+  // Auto-save when meanings change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      verbs.forEach((verb) => {
+        saveVerb(verb.verb, verb.meanings);
+      });
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [verbs, saveVerb]);
 
   const handleAddVerb = async () => {
     if (!newVerb.trim()) {
@@ -88,7 +53,7 @@ export const PhrasalVerbsTable = () => {
     }
 
     setIsAddingVerb(true);
-    const newVerbData: VerbData = {
+    const newVerbData = {
       verb: newVerb.trim(),
       meanings: new Array(PREPOSITIONS.length).fill(""),
     };
@@ -127,12 +92,13 @@ export const PhrasalVerbsTable = () => {
       }
     }
 
-    // Update with translations
+    // Update with translations and save
     newVerbData.meanings = translations;
     const finalVerbs = updatedVerbs.map(v => 
       v.verb === newVerb.trim() ? newVerbData : v
     );
     setVerbs(finalVerbs);
+    await saveVerb(newVerbData.verb, newVerbData.meanings);
     setNewVerb("");
     setIsAddingVerb(false);
 
@@ -142,8 +108,9 @@ export const PhrasalVerbsTable = () => {
     });
   };
 
-  const handleDeleteVerb = (verb: string) => {
+  const handleDeleteVerb = async (verb: string) => {
     setVerbs(verbs.filter(v => v.verb !== verb));
+    await deleteVerb(verb);
     toast({
       title: "Deleted",
       description: `${verb} has been removed`,
@@ -174,6 +141,14 @@ export const PhrasalVerbsTable = () => {
       description: "Verb name changed",
     });
   };
+
+  if (loading) {
+    return (
+      <Card className="p-6 flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </Card>
+    );
+  }
 
   return (
     <Card className="p-6">

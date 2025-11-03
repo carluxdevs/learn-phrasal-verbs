@@ -14,7 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      phrasal_verbs: {
+        Row: {
+          created_at: string
+          id: string
+          meanings: Json
+          updated_at: string
+          user_id: string
+          verb: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          meanings?: Json
+          updated_at?: string
+          user_id: string
+          verb: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          meanings?: Json
+          updated_at?: string
+          user_id?: string
+          verb?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
