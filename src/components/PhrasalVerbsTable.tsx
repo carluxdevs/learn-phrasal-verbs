@@ -203,9 +203,9 @@ export const PhrasalVerbsTable = () => {
 
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
-          <thead>
+          <thead className="sticky top-0 z-20">
             <tr>
-              <th className="sticky left-0 z-10 bg-[hsl(var(--table-header))] text-white p-3 text-left font-semibold border border-[hsl(var(--table-border))] min-w-[120px]">
+              <th className="sticky left-0 z-30 bg-[hsl(var(--table-header))] text-white p-3 text-left font-semibold border border-[hsl(var(--table-border))] min-w-[120px]">
                 Verb
               </th>
               {PREPOSITIONS.map((prep) => (
@@ -216,7 +216,7 @@ export const PhrasalVerbsTable = () => {
                   {prep}
                 </th>
               ))}
-              <th className="sticky right-0 z-10 bg-[hsl(var(--table-header))] text-white p-3 text-center font-semibold border border-[hsl(var(--table-border))] min-w-[100px]">
+              <th className="sticky right-0 z-30 bg-[hsl(var(--table-header))] text-white p-3 text-center font-semibold border border-[hsl(var(--table-border))] min-w-[100px]">
                 Actions
               </th>
             </tr>
