@@ -12,6 +12,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { z } from "zod";
+
+const verbSchema = z.object({
+  verb: z.string()
+    .trim()
+    .min(1, "Verb name is required")
+    .max(50, "Verb name must be less than 50 characters")
+    .regex(/^[a-zA-Z\s]+$/, "Only letters and spaces are allowed"),
+});
+
+const meaningSchema = z.string().max(200, "Meaning must be less than 200 characters");
 
 interface PhrasalVerbsTableProps {
   userId: string;
@@ -76,17 +87,21 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
   }, [verbs, saveVerb]);
 
   const handleAddVerb = async () => {
-    if (!newVerb.trim()) {
+    // Validate verb input
+    const validation = verbSchema.safeParse({ verb: newVerb });
+    if (!validation.success) {
       toast({
         title: "Error",
-        description: "Please enter a verb name",
+        description: validation.error.errors[0].message,
         variant: "destructive",
       });
       return;
     }
 
+    const trimmedVerb = validation.data.verb;
+
     // Check if verb already exists
-    if (verbs.some(v => v.verb.toLowerCase() === newVerb.trim().toLowerCase())) {
+    if (verbs.some(v => v.verb.toLowerCase() === trimmedVerb.toLowerCase())) {
       toast({
         title: "Error",
         description: "This verb already exists",
@@ -97,7 +112,7 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
 
     setIsAddingVerb(true);
     const newVerbData = {
-      verb: newVerb.trim(),
+      verb: trimmedVerb,
       meanings: new Array(PREPOSITIONS.length).fill(""),
     };
 
@@ -110,13 +125,13 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
     // Fetch translations for all prepositions
     const translations: string[] = [];
     for (let i = 0; i < PREPOSITIONS.length; i++) {
-      const key = `${newVerb.trim()}-${i}`;
+      const key = `${trimmedVerb}-${i}`;
       setLoadingTranslations(prev => new Set(prev).add(key));
       
       try {
         const { data, error } = await supabase.functions.invoke('translate-phrasal-verb', {
           body: { 
-            verb: newVerb.trim(), 
+            verb: trimmedVerb, 
             preposition: PREPOSITIONS[i].toLowerCase() 
           }
         });
@@ -124,7 +139,7 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
         if (error) throw error;
         translations[i] = data.translation || "";
       } catch (error) {
-        console.error(`Error translating ${newVerb} ${PREPOSITIONS[i]}:`, error);
+        console.error(`Error translating ${trimmedVerb} ${PREPOSITIONS[i]}:`, error);
         translations[i] = "";
       } finally {
         setLoadingTranslations(prev => {
@@ -138,7 +153,7 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
     // Update with translations and save
     newVerbData.meanings = translations;
     const finalVerbs = updatedVerbs.map(v => 
-      v.verb === newVerb.trim() ? newVerbData : v
+      v.verb === trimmedVerb ? newVerbData : v
     );
     setVerbs(finalVerbs);
     await saveVerb(newVerbData.verb, newVerbData.meanings);
@@ -161,6 +176,17 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
   };
 
   const handleEditCell = (verb: string, prepIndex: number, newValue: string) => {
+    // Validate meaning length
+    const validation = meaningSchema.safeParse(newValue);
+    if (!validation.success) {
+      toast({
+        title: "Error",
+        description: validation.error.errors[0].message,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setVerbs(verbs.map(v => {
       if (v.verb === verb) {
         const newMeanings = [...v.meanings];
@@ -172,10 +198,22 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
   };
 
   const handleRenameVerb = (oldVerb: string, newVerbName: string) => {
-    if (!newVerbName.trim()) return;
+    // Validate new verb name
+    const validation = verbSchema.safeParse({ verb: newVerbName });
+    if (!validation.success) {
+      toast({
+        title: "Error",
+        description: validation.error.errors[0].message,
+        variant: "destructive",
+      });
+      setEditingVerb(null);
+      return;
+    }
+    
+    const trimmedVerb = validation.data.verb;
     
     setVerbs(verbs.map(v => 
-      v.verb === oldVerb ? { ...v, verb: newVerbName.trim() } : v
+      v.verb === oldVerb ? { ...v, verb: trimmedVerb } : v
     ).sort((a, b) => a.verb.localeCompare(b.verb)));
     
     setEditingVerb(null);
