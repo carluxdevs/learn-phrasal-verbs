@@ -201,8 +201,8 @@ export const PhrasalVerbsTable = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+      <div className="overflow-x-auto max-h-[calc(100vh-200px)] overflow-y-auto">
+        <table className="w-full border-collapse relative">
           <thead className="sticky top-0 z-20">
             <tr>
               <th className="sticky left-0 z-30 bg-[hsl(var(--table-header))] text-white p-3 text-left font-semibold border border-[hsl(var(--table-border))] min-w-[120px]">
