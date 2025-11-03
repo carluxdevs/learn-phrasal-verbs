@@ -64,6 +64,7 @@ export const PhrasalVerbsTable = () => {
   const [newVerb, setNewVerb] = useState("");
   const [isAddingVerb, setIsAddingVerb] = useState(false);
   const [loadingTranslations, setLoadingTranslations] = useState<Set<string>>(new Set());
+  const [hoveredCell, setHoveredCell] = useState<{ rowIndex: number; colIndex: number } | null>(null);
   const { toast } = useToast();
 
   const handleAddVerb = async () => {
@@ -208,10 +209,12 @@ export const PhrasalVerbsTable = () => {
               <th className="sticky left-0 z-30 bg-[hsl(var(--table-header))] text-white p-3 text-left font-semibold border border-[hsl(var(--table-border))] min-w-[120px]">
                 Verb
               </th>
-              {PREPOSITIONS.map((prep) => (
+              {PREPOSITIONS.map((prep, colIndex) => (
                 <th
                   key={prep}
-                  className="bg-[hsl(var(--table-header))] text-white p-3 text-center font-semibold border border-[hsl(var(--table-border))] min-w-[150px]"
+                  className={`bg-[hsl(var(--table-header))] text-white p-3 text-center font-semibold border border-[hsl(var(--table-border))] min-w-[150px] transition-all ${
+                    hoveredCell?.colIndex === colIndex ? 'brightness-110' : ''
+                  }`}
                 >
                   {prep}
                 </th>
@@ -222,8 +225,13 @@ export const PhrasalVerbsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {verbs.map((verbData) => (
-              <tr key={verbData.verb} className="hover:bg-[hsl(var(--table-hover))] transition-colors">
+            {verbs.map((verbData, rowIndex) => (
+              <tr 
+                key={verbData.verb} 
+                className={`transition-colors ${
+                  hoveredCell?.rowIndex === rowIndex ? 'bg-[hsl(var(--table-hover))]' : ''
+                }`}
+              >
                 <td className="sticky left-0 z-10 bg-[hsl(var(--table-cell))] p-3 font-medium border border-[hsl(var(--table-border))]">
                   {editingVerb === verbData.verb ? (
                     <div className="flex gap-1">
@@ -261,16 +269,21 @@ export const PhrasalVerbsTable = () => {
                     </div>
                   )}
                 </td>
-                {verbData.meanings.map((meaning, index) => {
-                  const cellKey = `${verbData.verb}-${index}`;
+                {verbData.meanings.map((meaning, colIndex) => {
+                  const cellKey = `${verbData.verb}-${colIndex}`;
                   const isLoading = loadingTranslations.has(cellKey);
-                  const isEditing = editingCell?.verb === verbData.verb && editingCell?.prepIndex === index;
+                  const isEditing = editingCell?.verb === verbData.verb && editingCell?.prepIndex === colIndex;
+                  const isHighlighted = hoveredCell?.rowIndex === rowIndex || hoveredCell?.colIndex === colIndex;
                   
                   return (
                     <td
-                      key={index}
-                      className="bg-[hsl(var(--table-cell))] p-3 border border-[hsl(var(--table-border))] text-center cursor-pointer"
-                      onClick={() => !isLoading && setEditingCell({ verb: verbData.verb, prepIndex: index })}
+                      key={colIndex}
+                      className={`bg-[hsl(var(--table-cell))] p-3 border border-[hsl(var(--table-border))] text-center cursor-pointer transition-all ${
+                        isHighlighted ? 'bg-[hsl(var(--table-hover))]' : ''
+                      }`}
+                      onClick={() => !isLoading && setEditingCell({ verb: verbData.verb, prepIndex: colIndex })}
+                      onMouseEnter={() => setHoveredCell({ rowIndex, colIndex })}
+                      onMouseLeave={() => setHoveredCell(null)}
                     >
                       {isLoading ? (
                         <div className="flex justify-center">
@@ -280,12 +293,12 @@ export const PhrasalVerbsTable = () => {
                         <Input
                           defaultValue={meaning}
                           onBlur={(e) => {
-                            handleEditCell(verbData.verb, index, e.target.value);
+                            handleEditCell(verbData.verb, colIndex, e.target.value);
                             setEditingCell(null);
                           }}
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
-                              handleEditCell(verbData.verb, index, e.currentTarget.value);
+                              handleEditCell(verbData.verb, colIndex, e.currentTarget.value);
                               setEditingCell(null);
                             } else if (e.key === "Escape") {
                               setEditingCell(null);
