@@ -416,10 +416,11 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
                 <td className="sticky right-0 z-10 bg-[hsl(var(--table-cell))] p-3 border border-[hsl(var(--table-border))] text-center">
                   <Button
                     size="sm"
-                    variant="destructive"
+                    variant="ghost"
                     onClick={() => handleDeleteVerb(verbData.verb)}
+                    className="h-8 w-8 p-0 hover:bg-destructive/10"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </td>
               </tr>
