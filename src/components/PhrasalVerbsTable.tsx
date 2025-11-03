@@ -236,7 +236,7 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
       <div className="mb-6 flex justify-end gap-4">
         <div className="flex gap-2">
           <Input
-            placeholder="Enter verb name..."
+            placeholder="Enter verb"
             value={newVerb}
             onChange={(e) => setNewVerb(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddVerb()}
