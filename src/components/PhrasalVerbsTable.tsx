@@ -232,7 +232,9 @@ export const PhrasalVerbsTable = () => {
                   hoveredCell?.rowIndex === rowIndex ? 'bg-[hsl(var(--table-hover))]' : ''
                 }`}
               >
-                <td className="sticky left-0 z-10 bg-[hsl(var(--table-cell))] p-3 font-medium border border-[hsl(var(--table-border))]">
+                <td className={`sticky left-0 z-10 bg-[hsl(var(--table-cell))] p-3 font-medium border border-[hsl(var(--table-border))] transition-all ${
+                  hoveredCell?.rowIndex === rowIndex ? 'bg-[hsl(var(--table-hover))]' : ''
+                }`}>
                   {editingVerb === verbData.verb ? (
                     <div className="flex gap-1">
                       <Input
