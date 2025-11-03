@@ -2,10 +2,16 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Plus, Trash2, Edit2, X, Loader2 } from "lucide-react";
+import { Plus, Trash2, Edit2, X, Loader2, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { usePhrasalVerbs } from "./usePhrasalVerbs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PhrasalVerbsTableProps {
   userId: string;
@@ -19,7 +25,44 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
   const [isAddingVerb, setIsAddingVerb] = useState(false);
   const [loadingTranslations, setLoadingTranslations] = useState<Set<string>>(new Set());
   const [hoveredCell, setHoveredCell] = useState<{ rowIndex: number; colIndex: number } | null>(null);
+  const [exampleSentences, setExampleSentences] = useState<Record<string, string>>({});
+  const [loadingExamples, setLoadingExamples] = useState<Set<string>>(new Set());
   const { toast } = useToast();
+
+  const fetchExampleSentence = async (verb: string, preposition: string, meaning: string) => {
+    const key = `${verb}-${preposition}`;
+    
+    if (exampleSentences[key] || loadingExamples.has(key) || !meaning) {
+      return;
+    }
+
+    setLoadingExamples(prev => new Set(prev).add(key));
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-example-sentence', {
+        body: { verb, preposition, meaning }
+      });
+
+      if (error) throw error;
+
+      setExampleSentences(prev => ({
+        ...prev,
+        [key]: data.example || 'No example available'
+      }));
+    } catch (error) {
+      console.error('Error fetching example:', error);
+      setExampleSentences(prev => ({
+        ...prev,
+        [key]: 'Error loading example'
+      }));
+    } finally {
+      setLoadingExamples(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(key);
+        return newSet;
+      });
+    }
+  };
 
   // Auto-save when meanings change
   useEffect(() => {
@@ -203,7 +246,7 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
             {verbs.map((verbData, rowIndex) => (
               <tr 
                 key={verbData.verb} 
-                className={`transition-colors ${
+                className={`group transition-colors ${
                   hoveredCell?.rowIndex === rowIndex ? 'bg-[hsl(var(--table-hover))]' : ''
                 }`}
               >
@@ -285,7 +328,44 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
                           autoFocus
                         />
                       ) : (
-                        <span className="text-sm">{meaning || "-"}</span>
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="text-sm">{meaning || "-"}</span>
+                          {meaning && (
+                            <TooltipProvider>
+                              <Tooltip delayDuration={0}>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary"
+                                    onMouseEnter={() => fetchExampleSentence(
+                                      verbData.verb, 
+                                      PREPOSITIONS[colIndex].toLowerCase(), 
+                                      meaning
+                                    )}
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-sm">
+                                  {loadingExamples.has(`${verbData.verb}-${PREPOSITIONS[colIndex].toLowerCase()}`) ? (
+                                    <div className="flex items-center gap-2">
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                      <span>Generating example...</span>
+                                    </div>
+                                  ) : (
+                                    <div className="text-sm space-y-2">
+                                      {exampleSentences[`${verbData.verb}-${PREPOSITIONS[colIndex].toLowerCase()}`]?.split('|').map((sentence, idx) => (
+                                        <p key={idx} className={idx === 0 ? 'font-medium' : 'text-muted-foreground'}>
+                                          {sentence.trim()}
+                                        </p>
+                                      ))}
+                                    </div>
+                                  )}
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </div>
                       )}
                     </td>
                   );
