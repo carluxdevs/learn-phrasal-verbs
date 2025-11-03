@@ -7,6 +7,45 @@ const PREPOSITIONS = [
   "In", "Into", "Off", "On", "Out", "Over", "Up", "With"
 ];
 
+const INITIAL_VERBS = [
+  { verb: "Ask", meanings: ["","","","","","","","Pedir salir","","","","","","","",""] },
+  { verb: "Back", meanings: ["","","","","","","Echarse atrás","","","","Alejarse","","Retirarse","","Apoyar/Respaldar",""] },
+  { verb: "Be", meanings: ["","","","Estar fuera","","","Estar deprimido","Ir tras algo","Estar en casa","","Irse","Estar encendido","","Haber terminado","Estar despierto","Estar enfermo de"] },
+  { verb: "Blow", meanings: ["","","","","","","","","","","Soplar/Apagar","","Explotar","","Explotar",""] },
+  { verb: "Break", meanings: ["","","","","","","Averiarse","","Interrumpir","Irrumpir","","","Estallar/Repartir","","Terminar (relación)",""] },
+  { verb: "Bring", meanings: ["","","","Devolver","Traer de vuelta","","Bajar/Reducir","","","","","","","","Mencionar/Criar",""] },
+  { verb: "Bump", meanings: ["Encontrarse con","","","","","Visitar","","","","Chocarse con","","","","","",""] },
+  { verb: "Call", meanings: ["","","","","Devolver llamada","","","Pedir/Requerir","Visitar/Pasarse","","Cancelar/Suspender","Visitar","Gritar","","",""] },
+  { verb: "Carry", meanings: ["","Continuar","","","","","","","","","","Continuar","Llevar a cabo","","",""] },
+  { verb: "Check", meanings: ["","","","","","","","","Registrarse","","Verificar/Dejar hotel","","Investigar","","",""] },
+  { verb: "Come", meanings: ["Encontrarse con","Aparecer/Avanzar","","","Regresar","","Bajar","","Entrar","Toparse con","Desprenderse","¡Vamos!","Salir","Visitar/Venir","Subir/Surgir",""] },
+  { verb: "Cut", meanings: ["","","","","","","Reducir","","Interrumpir","","Cortar/Aislar","","Recortar/Dejar de","","",""] },
+  { verb: "Do", meanings: ["","","","","","","Abrochar (cremallera)","","","","","","","","Maquillar/Preparar",""] },
+  { verb: "Drop", meanings: ["","","","Dejar algo","","Visitar","Dejar (a alguien)","","","","Dejar a alguien","","","","Abandonar (estudios)",""] },
+  { verb: "Fill", meanings: ["","","","","","","","","Rellenar (formulario)","","","","Rellenar (espacio)","","Rellenar/Llenar",""] },
+  { verb: "Find", meanings: ["","","","","","","","","","","","","Averiguar/Descubrir","","",""] },
+  { verb: "Get", meanings: ["","Llevarse bien","Moverse/Viajar","Deshacerse de","Regresar","","Bajar/Deprimir","","Entrar","","Bajar (transporte)","Subir (transporte)","Salir","Recuperarse/Superar","Levantarse","Llevarse bien"] },
+  { verb: "Give", meanings: ["","","","Regalar","Devolver","","Derrumbarse","","Ceder","","","","Repartir","Repasar","Rendirse/Abandonar",""] },
+  { verb: "Go", meanings: ["","","Circular/Repartir","Irse","Volver/Regresar","","Bajar","Ir a buscar","Entrar","Revisar","Explotar/Deteriorarse","Continuar/Suceder","Salir","Repasar/Revisar","Subir/Aumentar",""] },
+  { verb: "Grow", meanings: ["","","","","","","Disminuir","","","","","","","","Crecer/Madurar",""] },
+  { verb: "Hang", meanings: ["","","","","Esperar/Devolver","","","","Entregar","","Colgar/Cortar (telf.)","Continuar","Pasar el rato","","",""] },
+  { verb: "Hold", meanings: ["","","","","Devolver","","Retrasar","","Contener/Caber","","","Esperar","","","Sostener",""] },
+  { verb: "Keep", meanings: ["","Llevarse bien","","Mantener alejado","Retener/Devolver","","Apuntar (datos)","Buscar","","","Alejar","Continuar","Ocultar","Superar","",""] },
+  { verb: "Look", meanings: ["across","","Buscar","","Recordar","","Despreciar","Buscar","Examinar/Investigar","Examinar/Investigar","","Observar/Cuidar","Tener cuidado","Pasar por alto","Buscar (info.)","Esperar con ansias"] },
+  { verb: "Make", meanings: ["","","","Irse","","","","","","","","","Entender","","Inventar/Hacer las paces",""] },
+  { verb: "Pass", meanings: ["","","","Repartir","","","Desmayarse","","","","Desmayarse","","Desmayarse/Repartir","","",""] },
+  { verb: "Pick", meanings: ["","","","","","","","","","","","","","","Recoger/Mejorar",""] },
+  { verb: "Point", meanings: ["","","","","","","","","","","","","Señalar/Destacar","","",""] },
+  { verb: "Put", meanings: ["","","","Guardar/Ordenar","Devolver","","Bajar/Apuntar","","Meter/Insertar","","Posponer/Desalentar","Ponerse (ropa)","Apagar (fuego)/Publicar","Superar/Tolerar","Subir/Alojar",""] },
+  { verb: "Run", meanings: ["Encontrarse con","","","Huir","","","Atropellar","","Entrar","Estrellarse","Irse","","Agotarse/Acabarse","Revisar","",""] },
+  { verb: "Set", meanings: ["","","","","","","","","Instalarse","","","Empezar (viaje)","Exponer/Partir","Superar/Recuperarse","Establecer/Montar",""] },
+  { verb: "Show", meanings: ["","","","","","","","","","","Presumir","","Aparecer/Llegar","","Aparecer/Llegar",""] },
+  { verb: "Sit", meanings: ["","","","","Apoyar","","Sentarse","","","","","","","","",""] },
+  { verb: "Stand", meanings: ["","","","","Apoyar/Respaldar","","","","Sustituir","","","","Destacar/Sobresalir","","Levantarse","Soportar"] },
+  { verb: "Take", meanings: ["","","","Quitarse/Despegar","Retirar/Devolver","","Apuntar/Anotar","","Engañar/Absorber","","Despegar/Quitarse","","Salir","Tomar el control","Empezar (hobby)",""] },
+  { verb: "Turn", meanings: ["","","","Rechazar","Volverse","","Bajar (volumen)/Rechazar","","Entregar","Convertirse en","Apagar","Encender","Resultar/Irse","","Subir (volumen)/Aparecer",""] },
+];
+
 interface VerbData {
   verb: string;
   meanings: string[];
@@ -31,12 +70,29 @@ export const usePhrasalVerbs = (userId: string | undefined) => {
 
         if (error) throw error;
 
-        const loadedVerbs: VerbData[] = data.map((item) => ({
-          verb: item.verb,
-          meanings: item.meanings as string[],
-        }));
+        // If no verbs exist, initialize with default data
+        if (!data || data.length === 0) {
+          const { error: insertError } = await supabase
+            .from("phrasal_verbs")
+            .insert(
+              INITIAL_VERBS.map(v => ({
+                user_id: userId,
+                verb: v.verb,
+                meanings: v.meanings,
+              }))
+            );
 
-        setVerbs(loadedVerbs);
+          if (insertError) throw insertError;
+
+          setVerbs(INITIAL_VERBS);
+        } else {
+          const loadedVerbs: VerbData[] = data.map((item) => ({
+            verb: item.verb,
+            meanings: item.meanings as string[],
+          }));
+
+          setVerbs(loadedVerbs);
+        }
       } catch (error: any) {
         console.error("Error loading verbs:", error);
         toast({
