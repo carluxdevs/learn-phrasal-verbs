@@ -13,7 +13,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { z } from "zod";
-import { migrateVerbsToNewPrepositions } from "./migratePrepositions";
 
 const verbSchema = z.object({
   verb: z.string()
@@ -75,26 +74,6 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
       });
     }
   };
-
-  // Run migration on component mount
-  useEffect(() => {
-    if (userId && verbs.length > 0) {
-      const runMigration = async () => {
-        try {
-          await migrateVerbsToNewPrepositions(userId);
-          // Reload verbs after migration
-          window.location.reload();
-        } catch (error) {
-          console.error("Migration error:", error);
-        }
-      };
-
-      // Check if migration is needed (check if first verb has correct length)
-      if (verbs[0]?.meanings.length === 16) {
-        runMigration();
-      }
-    }
-  }, [userId]);
 
   // Auto-save when meanings change
   useEffect(() => {
