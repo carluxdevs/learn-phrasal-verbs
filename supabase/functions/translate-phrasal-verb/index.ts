@@ -8,8 +8,8 @@ const corsHeaders = {
 };
 
 const translateSchema = z.object({
-  verb: z.string().min(1).max(50).regex(/^[a-zA-Z\s]+$/, "Verb must contain only letters and spaces"),
-  preposition: z.string().min(1).max(20).regex(/^[a-zA-Z]+$/, "Preposition must contain only letters")
+  verb: z.string().trim().min(1, "Verb is required").max(50, "Verb is too long"),
+  preposition: z.string().trim().min(1, "Preposition is required").max(30, "Preposition is too long")
 });
 
 serve(async (req) => {

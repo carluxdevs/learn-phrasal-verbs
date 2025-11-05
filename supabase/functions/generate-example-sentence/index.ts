@@ -8,9 +8,9 @@ const corsHeaders = {
 };
 
 const exampleSchema = z.object({
-  verb: z.string().min(1).max(50).regex(/^[a-zA-Z\s]+$/, "Verb must contain only letters and spaces"),
-  preposition: z.string().min(1).max(20).regex(/^[a-zA-Z]+$/, "Preposition must contain only letters"),
-  meaning: z.string().min(1).max(200, "Meaning must be less than 200 characters")
+  verb: z.string().trim().min(1, "Verb is required").max(50, "Verb is too long"),
+  preposition: z.string().trim().min(1, "Preposition is required").max(30, "Preposition is too long"),
+  meaning: z.string().trim().min(1, "Meaning is required").max(300, "Meaning is too long")
 });
 
 serve(async (req) => {
