@@ -8,6 +8,12 @@ There are several ways of editing your application.
 
 Simply visit the [Lovable Project](https://learn-phrasal-verbs.lovable.app/) and start prompting.
 
+1. Click on "Edit with Lovable" <img width="1484" height="924" alt="image" src="https://github.com/user-attachments/assets/c3ccdb1b-9b33-4e37-b1b2-90fda82c2940" />
+2. Select Remix
+   <img width="1093" height="747" alt="image" src="https://github.com/user-attachments/assets/1285eb78-c790-4bd1-b7c0-5b4d354a73e5" />
+
+
+
 Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
@@ -58,7 +64,7 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://learn-phrasal-verbs.lovable.app/) and click on Share -> Publish.
+Simply open your project and click on Share -> Publish.
 
 ## Can I connect a custom domain to my Lovable project?
 
