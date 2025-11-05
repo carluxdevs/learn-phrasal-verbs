@@ -50,11 +50,20 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
     setLoadingExamples(prev => new Set(prev).add(key));
 
     try {
+      // Verify user is authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('You must be logged in to generate examples');
+      }
+
       const { data, error } = await supabase.functions.invoke('generate-example-sentence', {
         body: { verb, preposition, meaning }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Function invocation error:', error);
+        throw error;
+      }
 
       setExampleSentences(prev => ({
         ...prev,
@@ -62,10 +71,16 @@ export const PhrasalVerbsTable = ({ userId }: PhrasalVerbsTableProps) => {
       }));
     } catch (error) {
       console.error('Error fetching example:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error loading example';
       setExampleSentences(prev => ({
         ...prev,
-        [key]: 'Error loading example'
+        [key]: errorMessage
       }));
+      toast({
+        title: "Error generating example",
+        description: errorMessage,
+        variant: "destructive"
+      });
     } finally {
       setLoadingExamples(prev => {
         const newSet = new Set(prev);
