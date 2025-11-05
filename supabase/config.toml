@@ -1,7 +1,7 @@
 project_id = "keecvbxwutfduvzfxxso"
 
 [functions.translate-phrasal-verb]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-example-sentence]
-verify_jwt = false
+verify_jwt = true
