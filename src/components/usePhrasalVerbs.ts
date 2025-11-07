@@ -31,7 +31,7 @@ const INITIAL_VERBS = [
   { verb: "Hang", meanings: ["Rondar/Merodear","","","","","","Esperar/Devolver","","","","","Entregar","","Colgar/Cortar (telf.)","Continuar","Pasar el rato","","","",""] },
   { verb: "Hold", meanings: ["","","","","","","Devolver","","Retrasar","","","Contener/Caber","","","Esperar","","","Sostener","",""] },
   { verb: "Keep", meanings: ["","","","Llevarse bien","","Mantener alejado","Retener/Devolver","","Apuntar (datos)","Buscar","","","","Alejar","Continuar","Ocultar","Superar","","Mantener el ritmo",""] },
-  { verb: "Look", meanings: ["","across","Cuidar (niños, mascotas)","","Buscar","","Recordar","","Despreciar","Buscar","","Examinar/Investigar","Examinar/Investigar","","Observar/Cuidar","Tener cuidado","Pasar por alto","Buscar (info.)","Esperar","Esperar con ansias"] },
+  { verb: "Look", meanings: ["","","Cuidar (niños, mascotas)","","Buscar","","Recordar","","Despreciar","Buscar","","Examinar/Investigar","Examinar/Investigar","","Observar/Cuidar","Tener cuidado","Pasar por alto","Buscar (info.)","Esperar","Esperar con ansias"] },
   { verb: "Make", meanings: ["","","","","","Irse","","","","","","","","","","Entender","","Inventar/Hacer las paces","",""] },
   { verb: "Pass", meanings: ["","","","","","Repartir","","","","","","","","Desmayarse","","Desmayarse/Repartir","","","",""] },
   { verb: "Pick", meanings: ["","","","","","","","","","","","","","","","","","Recoger/Mejorar","",""] },
