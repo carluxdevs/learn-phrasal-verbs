@@ -56,6 +56,18 @@ export const usePhrasalVerbs = (userId: string | undefined) => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  // Normalize meanings length to match PREPOSITIONS
+  const normalizeMeanings = (arr: string[]): string[] => {
+    if (arr.length === PREPOSITIONS.length) return arr;
+    if (arr.length === PREPOSITIONS.length - 1 && PREPOSITIONS[0] === "About") {
+      return ["", ...arr];
+    }
+    if (arr.length < PREPOSITIONS.length) {
+      return [...arr, ...Array(PREPOSITIONS.length - arr.length).fill("")];
+    }
+    return arr.slice(0, PREPOSITIONS.length);
+  };
+
   // Load verbs from database
   useEffect(() => {
     if (!userId) return;
@@ -88,7 +100,7 @@ export const usePhrasalVerbs = (userId: string | undefined) => {
         } else {
           const loadedVerbs: VerbData[] = data.map((item) => ({
             verb: item.verb,
-            meanings: item.meanings as string[],
+            meanings: normalizeMeanings(item.meanings as string[]),
           }));
 
           setVerbs(loadedVerbs);
