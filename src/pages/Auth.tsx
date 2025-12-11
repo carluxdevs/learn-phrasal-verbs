@@ -76,10 +76,14 @@ export default function Auth() {
         });
         setIsLogin(true);
       }
-    } catch (error: any) {
+    } catch (error) {
+      let message = "An unknown error occurred.";
+      if (error instanceof Error) {
+        message = error.message;
+      }
       toast({
         title: "Error",
-        description: error.message,
+        description: message,
         variant: "destructive",
       });
     } finally {
