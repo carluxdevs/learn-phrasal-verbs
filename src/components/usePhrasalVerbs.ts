@@ -105,7 +105,7 @@ export const usePhrasalVerbs = (userId: string | undefined) => {
 
           setVerbs(loadedVerbs);
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error loading verbs:", error);
         toast({
           title: "Error",
@@ -137,7 +137,7 @@ export const usePhrasalVerbs = (userId: string | undefined) => {
           });
 
         if (error) throw error;
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error saving verb:", error);
         toast({
           title: "Error",
@@ -162,7 +162,7 @@ export const usePhrasalVerbs = (userId: string | undefined) => {
           .eq("verb", verb);
 
         if (error) throw error;
-      } catch (error: any) {
+      } catch (error) {
         console.error("Error deleting verb:", error);
         toast({
           title: "Error",
